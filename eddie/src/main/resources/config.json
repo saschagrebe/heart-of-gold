@@ -1,0 +1,14 @@
+{
+  "serverIp" : "192.168.0.111",
+  "serverPort" : 5999,
+  "lowerStatusLightAdapter" : {
+    "adapterClassName" : "de.prolodeck.eddie.adapter.bamboo.BambooAdapter",
+    "refreshRate" : 360,
+    "lightCount" : 15,
+    "username" : "admin",
+    "password" : "admin",
+    "url" : "http://localhost:6990/",
+    "project" : "TEST"
+  },
+  "upperStatusLightAdapter" : {}
+}
