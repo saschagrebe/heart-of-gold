@@ -1,8 +1,11 @@
 package de.prolodeck.eddie.configuration;
 
+import com.google.inject.Singleton;
+
 /**
  * Created by grebe on 28.10.2016.
  */
+@Singleton
 public class CollectorConfig {
 
     private String serverIp;

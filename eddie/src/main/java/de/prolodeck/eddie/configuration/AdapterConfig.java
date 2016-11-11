@@ -36,14 +36,9 @@ public class AdapterConfig {
         this.refreshRate = refreshRate;
     }
 
-    @JsonAnyGetter
-    public Map<String, String> getAttributes() {
-        return attributes;
-    }
-
     @JsonAnySetter
-    public void setAttributes(Map<String, String> attributes) {
-        this.attributes = attributes;
+    public void addAttribute(final String key, final String value) {
+        this.attributes.put(key, value);
     }
 
     public String getAttribute(final String name) {

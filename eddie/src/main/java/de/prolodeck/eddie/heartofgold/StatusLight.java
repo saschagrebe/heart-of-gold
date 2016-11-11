@@ -1,5 +1,7 @@
 package de.prolodeck.eddie.heartofgold;
 
+import com.google.inject.Inject;
+
 import java.text.DecimalFormat;
 
 /**
@@ -9,7 +11,8 @@ public class StatusLight {
 
     private static final DecimalFormat INDEX_FORMAT = new DecimalFormat("00");
 
-    private final Eddie eddie;
+    @Inject
+    private EddieConnection eddie;
 
     private final StatusLightPosition position;
 
@@ -19,7 +22,7 @@ public class StatusLight {
 
         private final String key;
 
-        private StatusLightPosition(final String key) {
+        StatusLightPosition(final String key) {
             this.key = key;
         }
     }
@@ -27,8 +30,7 @@ public class StatusLight {
     // r<u|l><0|1> : rotate <upper|lower> <0|1>
     // s<u|l><pixel><color>
     // quit
-    StatusLight(final Eddie eddie, final StatusLightPosition position) {
-        this.eddie = eddie;
+    StatusLight(final StatusLightPosition position) {
         this.position = position;
     }
 

@@ -1,13 +1,18 @@
 package de.prolodeck.eddie.heartofgold;
 
+import com.google.inject.Inject;
+import com.google.inject.Singleton;
+import de.prolodeck.eddie.configuration.CollectorConfig;
+
 import java.io.DataOutputStream;
 import java.io.IOException;
 import java.net.Socket;
 
 /**
- * Created by grebe on 28.10.2016.
+ * Created by grebe on 11.11.2016.
  */
-public class Eddie {
+@Singleton
+public class EddieConnection {
 
     private final String serverIP;
 
@@ -15,21 +20,10 @@ public class Eddie {
 
     private Socket clientSocket;
 
-    private final StatusLight upper = new StatusLight(this, StatusLight.StatusLightPosition.UPPER);
-
-    private final StatusLight lower = new StatusLight(this, StatusLight.StatusLightPosition.LOWER);
-
-    public Eddie(final String serverIP, final int serverPort) {
-        this.serverIP = serverIP;
-        this.serverPort = serverPort;
-    }
-
-    public StatusLight upper() {
-        return upper;
-    }
-
-    public StatusLight lower() {
-        return lower;
+    @Inject
+    EddieConnection(final CollectorConfig config) {
+        this.serverIP = config.getServerIp();
+        this.serverPort = config.getServerPort();
     }
 
     void send(final String cmd) {
