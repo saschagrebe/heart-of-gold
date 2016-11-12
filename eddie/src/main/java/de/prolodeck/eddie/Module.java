@@ -5,8 +5,6 @@ import com.google.inject.AbstractModule;
 import com.google.inject.Provides;
 import com.google.inject.name.Names;
 import de.prolodeck.eddie.configuration.CollectorConfig;
-import de.prolodeck.eddie.heartofgold.EddieConnection;
-import de.prolodeck.eddie.heartofgold.EddieService;
 import de.prolodeck.eddie.heartofgold.StatusLight;
 import de.prolodeck.eddie.heartofgold.StatusLightProvider;
 

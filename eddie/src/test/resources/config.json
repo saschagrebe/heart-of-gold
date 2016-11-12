@@ -1,0 +1,16 @@
+{
+  "serverIp" : "AnyIP",
+  "serverPort" : 12345,
+  "lowerStatusLightAdapter" : {
+    "adapterClassName" : "TestAdapterA",
+    "refreshRate" : 100,
+    "lightCount" : 15,
+    "testAttributeA" : "test"
+  },
+  "upperStatusLightAdapter" : {
+    "adapterClassName" : "TestAdapterB",
+    "refreshRate" : 200,
+    "lightCount" : 30,
+    "testAttributeB" : "test"
+  }
+}
