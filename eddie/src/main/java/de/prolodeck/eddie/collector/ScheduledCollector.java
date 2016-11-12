@@ -9,6 +9,8 @@ import de.prolodeck.eddie.heartofgold.StatusLight;
 import org.quartz.Job;
 import org.quartz.JobExecutionContext;
 import org.quartz.JobExecutionException;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.util.HashMap;
 import java.util.List;
@@ -19,6 +21,8 @@ import java.util.Map;
  */
 public class ScheduledCollector implements Job {
 
+    private static final Logger log = LoggerFactory.getLogger(ScheduledCollector.class);
+
     private StatusLight statusLight;
 
     private AdapterConfig config;
@@ -28,14 +32,18 @@ public class ScheduledCollector implements Job {
     @Override
     public void execute(final JobExecutionContext jobExecutionContext) throws JobExecutionException {
         init(jobExecutionContext);
-        final List<CurrentState> states = this.adapter.getStates();
-        final Map<SystemStateType, Integer> statusCountMap = getStatusCountMap(states);
-        pushToStatusLight(states, statusCountMap);
+        try {
+            final List<CurrentState> states = this.adapter.getStates();
+            final Map<SystemStateType, Integer> statusCountMap = getStatusCountMap(states);
+            pushToStatusLight(states, statusCountMap);
+        } catch(Exception e) {
+            log.error("Failed collection of data.", e);
+        }
     }
 
     private void init(final JobExecutionContext jobExecutionContext) {
-        this.statusLight = (StatusLight) jobExecutionContext.get("statusLight");
-        this.config = (AdapterConfig) jobExecutionContext.get("config");
+        this.statusLight = (StatusLight) jobExecutionContext.getMergedJobDataMap().get("statusLight");
+        this.config = (AdapterConfig) jobExecutionContext.getMergedJobDataMap().get("config");
         this.adapter = SystemAdapterFactory.getInstance(config);
     }
 

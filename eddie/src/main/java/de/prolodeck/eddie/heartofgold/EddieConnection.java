@@ -3,6 +3,8 @@ package de.prolodeck.eddie.heartofgold;
 import com.google.inject.Inject;
 import com.google.inject.Singleton;
 import de.prolodeck.eddie.configuration.CollectorConfig;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.io.DataOutputStream;
 import java.io.IOException;
@@ -13,6 +15,8 @@ import java.net.Socket;
  */
 @Singleton
 public class EddieConnection {
+
+    private static final Logger log = LoggerFactory.getLogger(EddieConnection.class);
 
     private final String serverIP;
 
@@ -39,7 +43,7 @@ public class EddieConnection {
             outToServer.writeBytes(cmd + "\n");
             outToServer.flush();
         } catch(IOException e) {
-            System.out.println("Cmd produced exception " + e.getMessage());
+            log.error("Cmd produced exception " + e.getMessage());
         }
     }
 
@@ -49,7 +53,7 @@ public class EddieConnection {
                 clientSocket = new Socket(serverIP, serverPort);
                 sendInternal("hello friends");
             } catch(IOException e) {
-                System.out.println("Cmd produced exception " + e.getMessage());
+                log.error("Cmd produced exception " + e.getMessage());
             }
         }
     }

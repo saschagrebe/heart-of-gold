@@ -8,12 +8,16 @@ import de.prolodeck.eddie.heartofgold.EddieService;
 import de.prolodeck.eddie.heartofgold.StatusLight;
 import org.quartz.*;
 import org.quartz.impl.StdSchedulerFactory;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * Created by grebe on 12.11.2016.
  */
 @Singleton
 public class CollectorScheduler {
+
+    private static final Logger log = LoggerFactory.getLogger(CollectorScheduler.class);
 
     @Inject
     private CollectorConfig config;
@@ -37,7 +41,7 @@ public class CollectorScheduler {
 
     private void scheduleCollector(final AdapterConfig config, final StatusLight statusLight) throws SchedulerException {
         if (!config.isValid()) {
-            System.out.println("Configuration is not valid");
+            log.info("Configuration is not valid");
             return;
         }
 
