@@ -7,6 +7,8 @@ import de.prolodeck.eddie.adapter.bamboo.model.BambooResponseDTO;
 import de.prolodeck.eddie.adapter.bamboo.model.BambooResultDTO;
 import de.prolodeck.eddie.configuration.AdapterConfig;
 import org.glassfish.jersey.client.authentication.HttpAuthenticationFeature;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import javax.ws.rs.client.Client;
 import javax.ws.rs.client.ClientBuilder;
@@ -23,6 +25,8 @@ import java.util.List;
  */
 public class BambooAdapter implements SystemAdapter {
 
+    private static final Logger log = LoggerFactory.getLogger(BambooAdapter.class);
+
     private BambooConfig config;
 
     @Override
@@ -32,6 +36,8 @@ public class BambooAdapter implements SystemAdapter {
 
     @Override
     public final List<CurrentState> getStates() {
+        log.info("Loading build states from bamboo");
+
         final Client client = ClientBuilder.newClient();
         client.register(HttpAuthenticationFeature.basic(config.getUsername(), config.getPassword()));
         client.register(JacksonJsonProvider.class);
