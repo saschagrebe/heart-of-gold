@@ -1,11 +1,16 @@
 package de.prolodeck.eddie.heartofgold;
 
+import com.google.inject.Inject;
+import com.google.inject.Injector;
 import com.google.inject.Provider;
 
 /**
  * Created by grebe on 11.11.2016.
  */
 public class StatusLightProvider implements Provider<StatusLight> {
+
+    @Inject
+    private Injector injector;
 
     private final StatusLight.StatusLightPosition position;
 
@@ -15,7 +20,10 @@ public class StatusLightProvider implements Provider<StatusLight> {
 
     @Override
     public StatusLight get() {
-        return new StatusLight(position);
+        final StatusLight light = new StatusLight(position);
+        injector.injectMembers(light);
+
+        return light;
     }
 
     public static class Upper extends StatusLightProvider {
