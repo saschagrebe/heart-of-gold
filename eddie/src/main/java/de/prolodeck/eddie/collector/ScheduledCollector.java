@@ -12,9 +12,11 @@ import org.quartz.JobExecutionException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import java.util.HashMap;
+import java.math.BigDecimal;
+import java.math.RoundingMode;
 import java.util.List;
 import java.util.Map;
+import java.util.TreeMap;
 
 /**
  * Created by grebe on 02.11.2016.
@@ -48,7 +50,8 @@ public class ScheduledCollector implements Job {
     }
 
     private Map<SystemStateType, Integer> getStatusCountMap(final List<CurrentState> states) {
-        final Map<SystemStateType, Integer> statusCountMap = new HashMap<>();
+        // use tree map to have a sorted result
+        final Map<SystemStateType, Integer> statusCountMap = new TreeMap<>();
         for (CurrentState nextState : states) {
             final SystemStateType state = nextState.getState();
             Integer colorCount = statusCountMap.get(state);
@@ -57,6 +60,10 @@ public class ScheduledCollector implements Job {
             }
             statusCountMap.put(state, colorCount + 1);
         }
+        if (log.isInfoEnabled()) {
+            log.info("Found " + statusCountMap + " different states.");
+        }
+
         return statusCountMap;
     }
 
@@ -64,11 +71,29 @@ public class ScheduledCollector implements Job {
         final int lightCount = this.config.getLightCount();
         int ledOffset = 0;
         for (Map.Entry<SystemStateType, Integer> nextStateEntry : statusCountMap.entrySet()) {
-            final int ledsToSwitch = nextStateEntry.getValue() / states.size() * lightCount;
-            for (int i = 0; i < ledOffset + ledsToSwitch && i < lightCount; i++) {
-                this.statusLight.switchLight(i, nextStateEntry.getKey().getColor());
+            final int ledsToSwitch = BigDecimal.valueOf(nextStateEntry.getValue())
+                    .divide(BigDecimal.valueOf(states.size()))
+                    .multiply(BigDecimal.valueOf(lightCount))
+                    .setScale(0, RoundingMode.UP)
+                    .intValue();
+            final SystemStateType currentState = nextStateEntry.getKey();
+            if (log.isInfoEnabled()) {
+                log.info("Switch " + ledsToSwitch + " LEDs to " + currentState);
+            }
+
+            for (int i = ledOffset; i < ledOffset + ledsToSwitch && i < lightCount; i++) {
+                pushLedState(i, currentState);
             }
             ledOffset = ledOffset + ledsToSwitch;
+        }
+    }
+
+    private void pushLedState(final int ledIndex, final SystemStateType currentState) {
+        this.statusLight.switchLight(ledIndex, currentState.getColor());
+        try {
+            Thread.sleep(1000);
+        } catch(InterruptedException e) {
+            throw new RuntimeException(e);
         }
     }
 
