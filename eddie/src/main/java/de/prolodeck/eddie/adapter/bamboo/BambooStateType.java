@@ -6,9 +6,12 @@ import de.prolodeck.eddie.adapter.SystemStateType;
  * Created by grebe on 28.10.2016.
  */
 public enum BambooStateType implements SystemStateType {
-    SUCCESS("Successful", 255),
 
-    ERROR("Failed", 8000);
+    // green
+    SUCCESS("Successful", 0x7F00),
+
+    // red
+    ERROR("Failed", 0xFF);
 
     private final String state;
 
