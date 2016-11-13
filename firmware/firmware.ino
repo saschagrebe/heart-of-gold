@@ -46,10 +46,21 @@ void setupLeds() {
   upperRing.show();
 }
 
+void failure() {
+  // init logo
+  logo.setPixelColor(0, 0, 0, 255);
+  logo.setPixelColor(1, 0, 0, 255);
+  logo.setPixelColor(2, 0, 0, 255);
+  logo.setPixelColor(3, 0, 0, 255);
+  logo.setBrightness(255);
+  logo.show();
+}
+
 void setupNetwork() {
   // use DHCP for gathering an IP address
   if (Ethernet.begin(mac) == 0) {
     Serial.println("Failed DHCP");
+    failure();
   }
   Serial.println(Ethernet.localIP());
   
