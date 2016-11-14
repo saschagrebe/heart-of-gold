@@ -22,9 +22,16 @@ EthernetServer server = EthernetServer(5999);
 uint8_t mac[6] = {0x02, 0x3C, 0xBB, 0xF0, 0x0E, 0xB7};
 
 void setup() {
-  Serial.begin(9600);
   setupLeds();
-  setupNetwork();
+  
+  // use DHCP for gathering an IP address
+  if (Ethernet.begin(mac) == 0) {
+    dhcpFailure();
+  } else {
+    dhcpSuccess();
+  }
+  
+  server.begin();
 }
 
 void setupLeds() {
@@ -32,7 +39,14 @@ void setupLeds() {
   logo.begin();
   lowerRing.begin();
   upperRing.begin();
+  
+  // Turn all LEDs off ASAP
+  logo.show();
+  lowerRing.show();
+  upperRing.show();
+}
 
+void dhcpSuccess() {
   // init logo
   logo.setPixelColor(0, 0, 100, 255);
   logo.setPixelColor(1, 125, 255, 0);
@@ -40,13 +54,9 @@ void setupLeds() {
   logo.setPixelColor(3, 255, 0, 255);
   logo.setBrightness(255);
   logo.show();
-  
-  // Turn all LEDs off ASAP
-  lowerRing.show();
-  upperRing.show();
 }
 
-void failure() {
+void dhcpFailure() {
   // init logo
   logo.setPixelColor(0, 0, 0, 255);
   logo.setPixelColor(1, 0, 0, 255);
@@ -54,17 +64,6 @@ void failure() {
   logo.setPixelColor(3, 0, 0, 255);
   logo.setBrightness(255);
   logo.show();
-}
-
-void setupNetwork() {
-  // use DHCP for gathering an IP address
-  if (Ethernet.begin(mac) == 0) {
-    Serial.println("Failed DHCP");
-    failure();
-  }
-  Serial.println(Ethernet.localIP());
-  
-  server.begin();
 }
 
 String cmd = "";
@@ -113,9 +112,7 @@ void readTelnetCommand(char c) {
 // s<u|l><pixel><color>
 // q
 void parseCommand() {
-  Serial.println(cmd);
   if(cmd.charAt(0) == 'q') {
-      Serial.println("Bye");
       client.flush();
       client.stop();
       
