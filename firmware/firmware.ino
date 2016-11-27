@@ -68,8 +68,14 @@ void dhcpFailure() {
 
 String cmd = "";
 EthernetClient client;
-boolean rotateLower = false;
-boolean rotateUpper = false;
+byte lowerOffset = 0;
+byte upperOffset = 0;
+int lowerLoopCount = 0;
+int upperLoopCount = 0;
+
+// 1000ms / 20ms = 50
+int lowerWhirlSpeed = 50;
+int upperWhirlSpeed = 50;
 
 void loop() {
   client = server.available();
@@ -77,23 +83,40 @@ void loop() {
     while (client.available() > 0) {
       readTelnetCommand(client.read());
     }
-    
-    updateLeds();
   }
-  
+
+  updateLeds();
   delay(20);
 }
 
 void updateLeds() {
-  for (int i = 0; i < STATUS_RING_NUMPIXELS; i++) {
-    lowerRing.setPixelColor(i, lowerRingColors[i]);
+  // update lower LEDs
+  for (byte i = 0; i < STATUS_RING_NUMPIXELS; i++) {
+    lowerRing.setPixelColor((i + lowerOffset) % STATUS_RING_NUMPIXELS, lowerRingColors[i]);
   }
   lowerRing.show();
-  
-  for (int i = 0; i < STATUS_RING_NUMPIXELS; i++) {
-    upperRing.setPixelColor(i, upperRingColors[i]);
+
+  // lower whirl
+  if (++lowerLoopCount >= lowerWhirlSpeed) {
+    if (++lowerOffset >= STATUS_RING_NUMPIXELS) {
+      lowerOffset = 0;
+    }
+    lowerLoopCount = 0;
+  }
+
+  // update uper LEDs
+  for (byte i = 0; i < STATUS_RING_NUMPIXELS; i++) {
+    upperRing.setPixelColor((i + upperOffset) % STATUS_RING_NUMPIXELS, upperRingColors[i]);
   }
   upperRing.show();
+
+  // upper whirl
+  if (++upperLoopCount >= upperWhirlSpeed) {
+    if (++upperOffset >= STATUS_RING_NUMPIXELS) {
+      upperOffset = 0;
+    }
+    upperLoopCount = 0;
+  }
 }
 
 void readTelnetCommand(char c) {
@@ -108,7 +131,7 @@ void readTelnetCommand(char c) {
 }
 
 // - Help -
-// r<u|l><0|1> : rotate <upper|lower> <0|1>
+// w<u|l><whirlSpeed>
 // s<u|l><pixel><color>
 // q
 void parseCommand() {
@@ -116,22 +139,20 @@ void parseCommand() {
       client.flush();
       client.stop();
       
-  } else if(cmd.charAt(0) == 'r' && cmd.length() == 3) {
-      rotateCommand();
-      
+  } else if(cmd.charAt(0) == 'w' && cmd.length() > 2) {
+      setWhirlSpeed();
+     
   } else if(cmd.charAt(0) == 's' && cmd.length() > 4) {
       switchCommand();
       
   }
 }
 
-void rotateCommand() {
-  // ru1
-  boolean rotate = cmd.charAt(2) == '1';
+void setWhirlSpeed() {
   if (cmd.charAt(1) == 'u') {
-    rotateUpper = rotate;
+    upperWhirlSpeed = cmd.substring(2).toInt();
   } else {
-    rotateLower = rotate;
+    lowerWhirlSpeed = cmd.substring(2).toInt();
   }
 }
 

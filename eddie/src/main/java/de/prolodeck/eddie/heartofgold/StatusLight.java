@@ -1,6 +1,7 @@
 package de.prolodeck.eddie.heartofgold;
 
 import com.google.inject.Inject;
+import de.prolodeck.eddie.configuration.AdapterConfig;
 
 import java.text.DecimalFormat;
 
@@ -9,7 +10,7 @@ import java.text.DecimalFormat;
  */
 public class StatusLight {
 
-    private static final DecimalFormat INDEX_FORMAT = new DecimalFormat("00");
+    private final DecimalFormat INDEX_FORMAT = new DecimalFormat("00");
 
     @Inject
     private EddieConnection eddie;
@@ -26,20 +27,18 @@ public class StatusLight {
             this.key = key;
         }
     }
+
     // - Help -
-    // r<u|l><0|1> : rotate <upper|lower> <0|1>
+    // w<u|l><whirlSpeed>
     // s<u|l><pixel><color>
-    // quit
+    // q
     StatusLight(final StatusLightPosition position) {
         this.position = position;
     }
 
-    public void rotate() {
-        eddie.send("r" + position.key + "1");
-    }
-
-    public void halt() {
-        eddie.send("r" + position.key + "0");
+    public void configure(AdapterConfig config) {
+        // set whirl speed
+        eddie.send("w" + position.key + config.getWhirlSpeed());
     }
 
     public void switchLight(int index, int color) {

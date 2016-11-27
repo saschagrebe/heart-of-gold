@@ -18,6 +18,8 @@ public class AdapterConfig {
 
     private int lightCount = 15;
 
+    private int whirlSpeed = 50;
+
     private Map<String, String> attributes = new HashMap<>();
 
     public String getAdapterClassName() {
@@ -55,5 +57,13 @@ public class AdapterConfig {
 
     public boolean isValid() {
         return StringUtils.isNotEmpty(adapterClassName);
+    }
+
+    public int getWhirlSpeed() {
+        return whirlSpeed;
+    }
+
+    public void setWhirlSpeed(int whirlSpeed) {
+        this.whirlSpeed = whirlSpeed;
     }
 }
